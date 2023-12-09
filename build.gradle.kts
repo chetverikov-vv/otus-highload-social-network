@@ -28,6 +28,9 @@ dependencies {
     runtimeOnly("com.mysql:mysql-connector-j")
     implementation("org.liquibase:liquibase-core:4.24.0")
 
+    //CSV
+    implementation("com.opencsv:opencsv:5.9")
+
     //Logging
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 

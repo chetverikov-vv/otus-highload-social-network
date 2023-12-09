@@ -33,6 +33,15 @@ class UserServiceImpl(
         return UserService.FindResult.Success(user)
     }
 
+    override fun findByPrefixes(firstNamePrefix: String, lastNamePrefix: String): UserService.FindPrefixResult {
+        if(firstNamePrefix.isBlank() || lastNamePrefix.isBlank()) return UserService.FindPrefixResult.InvalidData
+        val users = userDao.findByPrefixes(firstNamePrefix, lastNamePrefix).getOrElse {
+            logger.error(it) { "Failure to find users by first name prefix = $firstNamePrefix and last name prefix = $lastNamePrefix" }
+            return UserService.FindPrefixResult.InternalError
+        }
+        return UserService.FindPrefixResult.Success(users)
+    }
+
     private fun RegisterRequest.validateAndTransform(): RegistrationUser? {
         return RegistrationUser(
             id = encryptionService.generateUserId(),
