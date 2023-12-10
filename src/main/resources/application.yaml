@@ -7,5 +7,7 @@ spring:
     username: test
     password: test
     driverClassName: com.mysql.jdbc.Driver
+    hikari:
+      maximum-pool-size: 32
   liquibase:
     change-log: classpath:db/changelog/db-changelog.yaml
