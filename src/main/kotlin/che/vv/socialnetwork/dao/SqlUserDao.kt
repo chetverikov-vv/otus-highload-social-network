@@ -51,6 +51,21 @@ class SqlUserDao(
         where
             id = :id
     """.trimIndent()
+    private val findByPrefixesQuery = """
+        select 
+            id,
+            first_name,
+            second_name,
+            birth_date,
+            biography,
+            city
+        from
+            $userTableName
+        where
+            first_name like :firstNamePrefix
+            and second_name like :lastNamePrefix
+        order by id
+    """.trimIndent()
 
     override fun register(user: RegistrationUser): Result<Unit> = runCatching {
         template.update(
@@ -82,5 +97,23 @@ class SqlUserDao(
                 city = rs.getString("city")
             )
         }.firstOrNull()
+    }
+
+    override fun findByPrefixes(firstNamePrefix: String, lastNamePrefix: String): Result<List<User>> = runCatching {
+        template.query(
+            findByPrefixesQuery, mapOf(
+                "firstNamePrefix" to "$firstNamePrefix%",
+                "lastNamePrefix" to "$lastNamePrefix%"
+            )
+        ) { rs, _ ->
+            User(
+                id = rs.getString("id"),
+                firstName = rs.getString("first_name"),
+                secondName = rs.getString("second_name"),
+                birthdate = LocalDate.parse(rs.getString("birth_date")),
+                biography = rs.getString("biography"),
+                city = rs.getString("city")
+            )
+        }
     }
 }
