@@ -27,6 +27,8 @@ dependencies {
     //MySQL
     runtimeOnly("com.mysql:mysql-connector-j")
     implementation("org.liquibase:liquibase-core:4.24.0")
+    //Postgres
+    runtimeOnly("org.postgresql:postgresql")
 
     //CSV
     implementation("com.opencsv:opencsv:5.9")
