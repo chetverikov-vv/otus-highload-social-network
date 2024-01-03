@@ -4,7 +4,6 @@ import che.vv.socialnetwork.controller.model.request.LoginRequest
 import che.vv.socialnetwork.controller.model.response.LoginResponse
 import che.vv.socialnetwork.service.AuthService
 import che.vv.socialnetwork.service.AuthService.LoginResult.*
-import mu.KotlinLogging
 import org.springframework.http.HttpStatus.*
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
