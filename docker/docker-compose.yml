@@ -1,0 +1,31 @@
+version: '3.5'
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - social-net
+    restart: unless-stopped
+  mono:
+    container_name: monolith-app
+    image: vchetverikov/social-network-mono
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASS: postgres
+      DIALOG_HOST: dialog-app
+    ports:
+      - "8080:8080"
+    networks:
+      - social-net
+    depends_on:
+      - postgres
+networks:
+  social-net:
+    driver: bridge

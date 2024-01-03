@@ -26,8 +26,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-    //MySQL
-    runtimeOnly("com.mysql:mysql-connector-j")
+    //Liquibase
     implementation("org.liquibase:liquibase-core:4.24.0")
     //Postgres
     runtimeOnly("org.postgresql:postgresql")

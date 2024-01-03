@@ -73,7 +73,7 @@ class SqlUserDao(
                 "id" to user.id,
                 "firstName" to user.firstName,
                 "secondName" to user.secondName,
-                "birthDate" to user.birthdate.toString(),
+                "birthDate" to user.birthdate,
                 "biography" to user.biography,
                 "city" to user.city,
                 "password" to user.encryptedPassword,
