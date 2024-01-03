@@ -1,9 +1,12 @@
 package che.vv.socialnetwork.controller
 
 import che.vv.socialnetwork.controller.model.request.LoginRequest
+import che.vv.socialnetwork.controller.model.request.RegisterRequest
 import che.vv.socialnetwork.controller.model.response.LoginResponse
+import che.vv.socialnetwork.controller.model.response.RegisterResponse
 import che.vv.socialnetwork.service.AuthService
 import che.vv.socialnetwork.service.AuthService.LoginResult.*
+import che.vv.socialnetwork.service.UserService
 import org.springframework.http.HttpStatus.*
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -22,5 +25,13 @@ class AuthController(
             NotFound -> throw ResponseStatusException(NOT_FOUND)
             InvalidData -> throw ResponseStatusException(BAD_REQUEST)
             InternalFailure -> throw ResponseStatusException(INTERNAL_SERVER_ERROR)
+        }
+
+    @PostMapping("/user/register")
+    fun register(@RequestBody registerRequest: RegisterRequest): RegisterResponse =
+        when (val result = authService.register(registerRequest)) {
+            is AuthService.RegisterResult.Success -> RegisterResponse(result.userId)
+            AuthService.RegisterResult.InternalError -> throw ResponseStatusException(INTERNAL_SERVER_ERROR)
+            AuthService.RegisterResult.InvalidData -> throw ResponseStatusException(BAD_REQUEST)
         }
 }

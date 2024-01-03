@@ -9,19 +9,10 @@ import java.time.LocalDate
 
 @Service
 class UserServiceImpl(
-    private val encryptionService: EncryptionService,
     private val userDao: UserDao
 ) : UserService {
 
     private val logger = KotlinLogging.logger {  }
-    override fun register(request: RegisterRequest): UserService.RegisterResult {
-        val registrationUser = request.validateAndTransform() ?: return UserService.RegisterResult.InvalidData
-         userDao.register(registrationUser).getOrElse {
-             logger.error(it) { "Failure to register user" }
-             return UserService.RegisterResult.InternalError
-         }
-        return UserService.RegisterResult.Success(registrationUser.id)
-    }
 
     override fun findById(userId: String): UserService.FindResult {
         if (userId.isEmpty()) return UserService.FindResult.InvalidData
@@ -42,16 +33,4 @@ class UserServiceImpl(
         return UserService.FindPrefixResult.Success(users)
     }
 
-    private fun RegisterRequest.validateAndTransform(): RegistrationUser? {
-        return RegistrationUser(
-            id = encryptionService.generateUserId(),
-            firstName = this.firstName,
-            secondName = this.secondName,
-            birthdate = runCatching { LocalDate.parse(birthDate) }.getOrElse { return null },
-            biography = this.biography,
-            city = this.city,
-            encryptedPassword = if (password.isEmpty()) return null else encryptionService.encryptPassword(password),
-            token = encryptionService.generateToken()
-        )
-    }
 }

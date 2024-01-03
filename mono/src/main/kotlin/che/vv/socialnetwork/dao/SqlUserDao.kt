@@ -14,31 +14,6 @@ class SqlUserDao(
 
     private val template = NamedParameterJdbcTemplate(dataSource)
     private val userTableName = "users"
-    private val registerQuery = """
-        insert into
-            $userTableName
-            (
-                id,
-                first_name,
-                second_name,
-                birth_date,
-                biography,
-                city,
-                password,
-                token
-            )
-        values
-            (
-                :id,
-                :firstName,
-                :secondName,
-                :birthDate,
-                :biography,
-                :city,
-                :password,
-                :token
-            )
-    """.trimIndent()
     private val findByIdQuery = """
         select 
             first_name,
@@ -67,20 +42,7 @@ class SqlUserDao(
         order by id
     """.trimIndent()
 
-    override fun register(user: RegistrationUser): Result<Unit> = runCatching {
-        template.update(
-            registerQuery, mapOf(
-                "id" to user.id,
-                "firstName" to user.firstName,
-                "secondName" to user.secondName,
-                "birthDate" to user.birthdate,
-                "biography" to user.biography,
-                "city" to user.city,
-                "password" to user.encryptedPassword,
-                "token" to user.token
-            )
-        )
-    }
+
 
     override fun findById(userId: String): Result<User?> = runCatching {
         template.query(
