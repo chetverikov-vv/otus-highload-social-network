@@ -21,11 +21,18 @@ repositories {
 }
 
 dependencies {
+    //Spring
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
+    //Logging
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
+
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+
     runtimeOnly("org.postgresql:postgresql")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
