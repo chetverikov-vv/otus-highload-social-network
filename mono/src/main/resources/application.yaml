@@ -11,3 +11,7 @@ spring:
       maximum-pool-size: 32
   liquibase:
     change-log: classpath:db/changelog/db-changelog.yaml
+
+dialogs:
+  host: ${DIALOGS_HOST}
+  port: ${DIALOGS_PORT}

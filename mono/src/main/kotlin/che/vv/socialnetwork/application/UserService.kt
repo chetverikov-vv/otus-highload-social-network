@@ -1,15 +1,17 @@
-package che.vv.socialnetwork.service
+package che.vv.socialnetwork.application
 
-import che.vv.socialnetwork.controller.model.request.RegisterRequest
-import che.vv.socialnetwork.service.model.User
+import che.vv.socialnetwork.domain.user.User
+import che.vv.socialnetwork.domain.user.UserId
+import che.vv.socialnetwork.domain.request.FindByPrefixRequest
+import che.vv.socialnetwork.domain.request.RegisterUserRequest
 
 interface UserService {
-    fun register(request: RegisterRequest): RegisterResult
-    fun findById(userId: String):FindResult
-    fun findByPrefixes(firstNamePrefix: String, lastNamePrefix: String):FindPrefixResult
+    fun register(request: RegisterUserRequest): RegisterResult
+    fun findById(userId: UserId):FindResult
+    fun findByPrefixes(findRequest: FindByPrefixRequest):FindPrefixResult
 
     sealed class RegisterResult{
-        data class Success(val userId: String):RegisterResult()
+        data class Success(val userId: UserId):RegisterResult()
         object InvalidData: RegisterResult()
         object InternalError: RegisterResult()
     }
@@ -23,7 +25,6 @@ interface UserService {
 
     sealed class FindPrefixResult{
         data class Success(val users: List<User>):FindPrefixResult()
-        object InvalidData:FindPrefixResult()
         object InternalError: FindPrefixResult()
     }
 }

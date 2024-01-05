@@ -1,19 +1,18 @@
-package che.vv.socialnetwork.dao
+package che.vv.socialnetwork.infrastructure
 
-import che.vv.socialnetwork.service.model.RegistrationUser
-import che.vv.socialnetwork.service.model.User
+import che.vv.socialnetwork.domain.request.FindByPrefixRequest
+import che.vv.socialnetwork.domain.user.*
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
 import javax.sql.DataSource
 
 @Repository
-class SqlUserDao(
-    private val dataSource: DataSource
-) : UserDao {
+class PostgresUserRepository(private val dataSource: DataSource) : UserRepository {
 
     private val template = NamedParameterJdbcTemplate(dataSource)
     private val userTableName = "users"
+
     private val registerQuery = """
         insert into
             $userTableName
@@ -39,18 +38,23 @@ class SqlUserDao(
                 :token
             )
     """.trimIndent()
+
     private val findByIdQuery = """
         select 
+            id,
             first_name,
             second_name,
             birth_date,
             biography,
-            city
+            city,
+            password,
+            token
         from
             $userTableName
         where
             id = :id
     """.trimIndent()
+
     private val findByPrefixesQuery = """
         select 
             id,
@@ -58,7 +62,9 @@ class SqlUserDao(
             second_name,
             birth_date,
             biography,
-            city
+            city,
+            password,
+            token
         from
             $userTableName
         where
@@ -67,53 +73,89 @@ class SqlUserDao(
         order by id
     """.trimIndent()
 
-    override fun register(user: RegistrationUser): Result<Unit> = runCatching {
+    private val findTokenByCredentialsQuery = """
+        select 
+            token
+        from
+            $userTableName
+        where 
+            id = :userId 
+            and password = :password
+    """.trimIndent()
+
+    private val findIdByToken = """
+        select
+            id
+        from 
+            $userTableName
+        where
+            token = :token
+    """.trimIndent()
+
+    override fun save(user: User): Result<Unit> = runCatching {
         template.update(
             registerQuery, mapOf(
-                "id" to user.id,
+                "id" to user.id.value,
                 "firstName" to user.firstName,
                 "secondName" to user.secondName,
                 "birthDate" to user.birthdate,
                 "biography" to user.biography,
                 "city" to user.city,
-                "password" to user.encryptedPassword,
-                "token" to user.token
+                "password" to user.encryptedPassword.value,
+                "token" to user.bearerToken.value
             )
         )
     }
 
-    override fun findById(userId: String): Result<User?> = runCatching {
+    override fun findById(id: UserId): Result<User?> = runCatching {
         template.query(
-            findByIdQuery, mapOf(
-                "id" to userId
-            )
+            findByIdQuery, mapOf("id" to id.value)
         ) { rs, _ ->
             User(
-                id = userId,
+                id = UserId.fromString(rs.getString("first_name"))!!,
                 firstName = rs.getString("first_name"),
                 secondName = rs.getString("second_name"),
                 birthdate = LocalDate.parse(rs.getString("birth_date")),
                 biography = rs.getString("biography"),
-                city = rs.getString("city")
+                city = rs.getString("city"),
+                encryptedPassword = EncryptedPassword.fromString(rs.getString("password"))!!,
+                bearerToken = Token.fromString(rs.getString("token"))!!
             )
         }.firstOrNull()
     }
 
-    override fun findByPrefixes(firstNamePrefix: String, lastNamePrefix: String): Result<List<User>> = runCatching {
+    override fun findBy(request: FindByPrefixRequest): Result<List<User>> = runCatching {
         template.query(
             findByPrefixesQuery, mapOf(
-                "firstNamePrefix" to "$firstNamePrefix%",
-                "lastNamePrefix" to "$lastNamePrefix%"
+                "firstNamePrefix" to "${request.firstNamePrefix}%",
+                "lastNamePrefix" to "${request.lastNamePrefix}%"
             )
         ) { rs, _ ->
             User(
-                id = rs.getString("id"),
+                id = UserId.fromString(rs.getString("first_name"))!!,
                 firstName = rs.getString("first_name"),
                 secondName = rs.getString("second_name"),
                 birthdate = LocalDate.parse(rs.getString("birth_date")),
                 biography = rs.getString("biography"),
-                city = rs.getString("city")
+                city = rs.getString("city"),
+                encryptedPassword = EncryptedPassword.fromString(rs.getString("password"))!!,
+                bearerToken = Token.fromString(rs.getString("token"))!!
             )
         }
+    }
+
+    override fun findTokenBy(credentials: Credentials): Result<Token?> = runCatching {
+        template.query(
+            findTokenByCredentialsQuery, mapOf(
+                "userId" to credentials.id.value,
+                "password" to credentials.password.value
+            )
+        ) { rs, _ -> Token.fromString(rs.getString("token"))!! }.firstOrNull()
+    }
+
+    override fun findIdBy(token: Token): Result<UserId?> = runCatching {
+        template.query(findIdByToken, mapOf("token" to token.value)) { rs, _ ->
+            UserId.fromString(rs.getString("id"))!!
+        }.firstOrNull()
     }
 }

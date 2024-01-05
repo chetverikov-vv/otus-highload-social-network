@@ -1,4 +1,4 @@
-package che.vv.socialnetwork.controller.model.response
+package che.vv.socialnetwork.presentation.model.response
 
 import com.fasterxml.jackson.annotation.JsonProperty
 

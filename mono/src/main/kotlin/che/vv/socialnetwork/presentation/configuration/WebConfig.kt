@@ -1,4 +1,4 @@
-package che.vv.socialnetwork.configuration
+package che.vv.socialnetwork.presentation.configuration
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
