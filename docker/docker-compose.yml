@@ -12,20 +12,40 @@ services:
     networks:
       - social-net
     restart: unless-stopped
+
+  dialogs:
+    container_name: dialogs
+    image: vchetverikov/social-network-dialogs
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASS: postgres
+    ports:
+      - "8081:8081"
+    networks:
+      - social-net
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
   mono:
-    container_name: monolith-app
+    container_name: mono
     image: vchetverikov/social-network-mono
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASS: postgres
-      DIALOG_HOST: dialog-app
+      DIALOGS_HOST: dialogs
+      DIALOGS_PORT: 8081
     ports:
       - "8080:8080"
     networks:
       - social-net
     depends_on:
       - postgres
+      - dialogs
+    restart: unless-stopped
+
 networks:
   social-net:
     driver: bridge
