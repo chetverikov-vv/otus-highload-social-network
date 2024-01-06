@@ -29,6 +29,8 @@ dependencies {
     //Logging
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 
+    //Liquibase
+    implementation("org.liquibase:liquibase-core:4.24.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     runtimeOnly("org.postgresql:postgresql")

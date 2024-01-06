@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: createTableDialogs
+      author: vladimir-che
+      changes:
+        - createTable:
+            tableName: dialogs
+            columns:
+              - column:
+                  name: id
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: sender
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: receiver
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: text
+                  type: varchar(4000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: send_timestamp
+                  type: timestamp
+                  constraints:
+                    nullable: false

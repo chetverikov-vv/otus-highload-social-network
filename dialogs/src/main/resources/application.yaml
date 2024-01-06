@@ -8,3 +8,5 @@ spring:
     driverClassName: org.postgresql.Driver
     hikari:
       maximum-pool-size: 32
+  liquibase:
+    change-log: classpath:db/changelog/db-changelog.yaml
