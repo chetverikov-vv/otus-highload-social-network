@@ -83,15 +83,6 @@ class PostgresUserRepository(private val dataSource: DataSource) : UserRepositor
             and password = :password
     """.trimIndent()
 
-    private val findIdByToken = """
-        select
-            id
-        from 
-            $userTableName
-        where
-            token = :token
-    """.trimIndent()
-
     override fun save(user: User): Result<Unit> = runCatching {
         template.update(
             registerQuery, mapOf(
@@ -151,11 +142,5 @@ class PostgresUserRepository(private val dataSource: DataSource) : UserRepositor
                 "password" to credentials.password.value
             )
         ) { rs, _ -> Token.fromString(rs.getString("token"))!! }.firstOrNull()
-    }
-
-    override fun findIdBy(token: Token): Result<UserId?> = runCatching {
-        template.query(findIdByToken, mapOf("token" to token.value)) { rs, _ ->
-            UserId.fromString(rs.getString("id"))!!
-        }.firstOrNull()
     }
 }

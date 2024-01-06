@@ -8,6 +8,4 @@ interface UserRepository {
     fun findBy(request: FindByPrefixRequest): Result<List<User>>
 
     fun findTokenBy(credentials: Credentials):Result<Token?>
-
-    fun findIdBy(token: Token): Result<UserId?>
 }
